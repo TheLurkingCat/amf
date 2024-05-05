@@ -2015,6 +2015,8 @@ func HandleAuthenticationResponse(ue *context.AmfUe, accessType models.AccessTyp
 				}, logger.GmmLog)
 			}
 		}
+	case models.AuthType_EAP_TLS:
+		fallthrough
 	case models.AuthType_EAP_AKA_PRIME:
 		response, problemDetails, err := consumer.SendEapAuthConfirmRequest(ue, *authenticationResponse.EAPMessage)
 		if err != nil {
@@ -2163,7 +2165,7 @@ func HandleAuthenticationFailure(ue *context.AmfUe, anType models.AccessType,
 
 			gmm_message.SendAuthenticationRequest(ue.RanUe[anType])
 		}
-	} else if ue.AuthenticationCtx.AuthType == models.AuthType_EAP_AKA_PRIME {
+	} else if ue.AuthenticationCtx.AuthType == models.AuthType_EAP_AKA_PRIME || ue.AuthenticationCtx.AuthType == models.AuthType_EAP_TLS {
 		switch cause5GMM {
 		case nasMessage.Cause5GMMngKSIAlreadyInUse:
 			ue.GmmLog.Warn("Authentication Failure 5GMM Cause: NgKSI Already In Use")
